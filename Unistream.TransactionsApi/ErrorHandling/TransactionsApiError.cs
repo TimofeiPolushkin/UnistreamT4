@@ -9,5 +9,10 @@
         /// Описание ошибки
         /// </summary>
         public string Message { get; set; }
+
+        /// <summary>
+        /// Код ошибки
+        /// </summary>
+        public ErrorCode ErrorCode { get; set; }
     }
 }

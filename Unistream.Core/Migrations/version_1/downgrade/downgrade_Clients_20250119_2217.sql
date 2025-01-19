@@ -1,0 +1,7 @@
+DO $$ BEGIN
+
+	DROP TABLE IF EXISTS info."Clients";
+
+	DROP SCHEMA IF EXISTS "info";
+
+END $$;

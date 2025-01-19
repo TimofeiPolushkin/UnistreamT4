@@ -27,9 +27,9 @@
         /// </summary>
         DateTimeOffset? Deleted { get; set; }
 
-        /// <summary>
-        /// Версия
-        /// </summary>
-        byte[] Version { get; set; }
+        ///// <summary>
+        ///// Версия
+        ///// </summary>
+        //byte[] Version { get; set; }
     }
 }

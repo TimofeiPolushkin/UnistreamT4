@@ -1,8 +1,5 @@
-﻿namespace Unistream.Transactions.Model.EF.Enums
+﻿namespace Unistream.Transactions.Model.Models.Enums
 {
-    /// <summary>
-    /// Тип транзакции
-    /// </summary>
     public enum TransactionHistoryType
     {
         /// <summary>

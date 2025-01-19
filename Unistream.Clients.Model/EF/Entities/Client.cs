@@ -1,6 +1,9 @@
-﻿namespace Unistream.Transactions.Model.EF.Entities
+﻿namespace Unistream.Clients.Model.EF.Entities
 {
-    public class TransactionHistory : ITransactionEntity
+    /// <summary>
+    /// Клиент
+    /// </summary>
+    public class Client
     {
         ///<inheritdoc/>
         public long Id { get; set; }
@@ -21,23 +24,23 @@
         public byte[] Version { get; set; } = Array.Empty<byte>();
 
         /// <summary>
-        /// Тип транзакции
+        /// Имя
         /// </summary>
-        public Enums.TransactionHistoryType TransactionType { get; set; }
+        public string FirstName { get; set; }
 
         /// <summary>
-        /// Сумма
+        /// Отчество
         /// </summary>
-        public decimal Amount { get; set; }
+        public string MiddleName { get; set; }
 
         /// <summary>
-        /// Идентификатор клиента
+        /// Фамилия
         /// </summary>
-        public Guid ClientId { get; set; }
+        public string LastName { get; set; }
 
         /// <summary>
-        /// Дата и время транзакции
+        /// Баланс
         /// </summary>
-        public DateTimeOffset TransactionDateTime { get; set; }
+        public decimal Balance { get; set; }
     }
 }

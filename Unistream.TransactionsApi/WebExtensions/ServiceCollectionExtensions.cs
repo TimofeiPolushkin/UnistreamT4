@@ -5,9 +5,16 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Configuration;
+using Unistream.Transactions.Model.EF;
+using Microsoft.EntityFrameworkCore;
+using Unistream.Clients.Model.EF;
 
 namespace Unistream.TransactionsApi.WebExtensions
 {
+    /// <summary>
+    /// Методы расширения зависимостей
+    /// </summary>
     public static class ServiceCollectionExtensions
     {
         /// <summary>
@@ -30,6 +37,11 @@ namespace Unistream.TransactionsApi.WebExtensions
             return serviceCollection;
         }
 
+        /// <summary>
+        /// Конфигурация swagger
+        /// </summary>
+        /// <param name="applicationName">Имя приложения</param>
+        /// <returns></returns>
         public static IServiceCollection AddSwagger(this IServiceCollection services, string applicationName, Action<SwaggerGenOptions> configure = null)
         {
             services.AddApiVersioning(
@@ -72,162 +84,161 @@ namespace Unistream.TransactionsApi.WebExtensions
             return services;
         }
 
-        ///// <summary>
-        ///// Метод по добавлению контекстов
-        ///// </summary>
-        ///// <param name="services"></param>
-        //public static IServiceCollection AddInMemoryDatabaseConnections(this IServiceCollection services, IConfiguration configuration)
-        //{
-        //    // Добавление контекста ЛИС
-        //    services.AddScoped<ILisContext>(serviceProvider =>
-        //    {
-        //        var lisContextFactory = serviceProvider.GetService<ILisContextFactory>();
-        //        return lisContextFactory.GetTypedContext<LisContext>(options =>
-        //            options.UseLazyLoadingProxies().UseInMemoryDatabase("Lis"));
-        //    });
-
-        //    return services;
-        //}
-
         /// <summary>
         /// Метод по добавлению контекстов
         /// </summary>
         /// <param name="services"></param>
-        //public static IServiceCollection AddRealDatabaseConnections(this IServiceCollection services, IConfiguration configuration)
-        //{
-        //    // Добавление контекста ЛИС
-        //    services.AddScoped<ILisContext>(serviceProvider =>
-        //    {
-        //        var lisContextFactory = serviceProvider.GetService<ILisContextFactory>();
-        //        return lisContextFactory.GetTypedContext<LisContext>(options =>
-        //            options.UseLazyLoadingProxies()
-        //                .UseNpgsql(configuration.GetConnectionString("LisDBConnectionString"),
-        //                    x => x.CommandTimeout(3600).EnableRetryOnFailure()));
-        //    });
+        public static IServiceCollection AddInMemoryDatabaseConnections(this IServiceCollection services, IConfiguration configuration)
+        {
+            // Добавление контекста транзакций
+            services.AddScoped<TransactionContext>(serviceProvider =>
+            {
+                var transactionFactory = serviceProvider.GetService<TransactionContextFactory>();
+                return transactionFactory.CreateDbContext<TransactionContext>(options =>
+                    options.UseLazyLoadingProxies().UseInMemoryDatabase("TransactionsHistory"));
+            });
 
-        //    services.AddScoped<ResultsContext>(serviceProvider =>
-        //    {
-        //        var lisContextFactory = serviceProvider.GetService<Invitro.Ethereum.Audit.Abstractions.Context.IDbContextFactory<ResultsContext>>();
-        //        return lisContextFactory.GetTypedContext<ResultsContext>(options =>
-        //            options.UseLazyLoadingProxies()
-        //                .LogTo(Log.Logger.Information, LogLevel.Information, null)
-        //                .UseLoggerFactory(serviceProvider.GetRequiredService<ILoggerFactory>())
-        //                .EnableSensitiveDataLogging()
-        //                .UseNpgsql(configuration.GetConnectionString("TaskControl")));
-        //    });
+            // Добавление контекста клиентов
+            services.AddScoped<ClientContext>(serviceProvider =>
+            {
+                var transactionFactory = serviceProvider.GetService<ClientContextFactory>();
+                return transactionFactory.CreateDbContext<ClientContext>(options =>
+                    options.UseLazyLoadingProxies().UseInMemoryDatabase("Clients"));
+            });
 
-        //    services.AddScoped<RegistrationContext>(serviceProvider =>
-        //    {
-        //        var lisContextFactory = serviceProvider.GetService<Invitro.Ethereum.Audit.Abstractions.Context.IDbContextFactory<RegistrationContext>>();
-        //        return lisContextFactory.GetTypedContext<RegistrationContext>(options =>
-        //            options.UseLazyLoadingProxies()
-        //                .UseNpgsql(configuration.GetConnectionString("Registration")));
-        //    });
 
-        //    //TODO: осталось ли использование аудита?
-        //    services.AddDbContext<AuditLisContext, ResultsAuditContext>(option =>
-        //        option.UseNpgsql(configuration.GetConnectionString("TaskControl"),
-        //            sqlOpt => sqlOpt.CommandTimeout(3600)));
-
-        //    services.AddDbContext<SecurityContext>(
-        //        builder =>
-        //        {
-        //            builder.UseLazyLoadingProxies()
-        //                .UseNpgsql(configuration.GetConnectionString("Security"));
-        //        }
-        //    );
-
-        //    services.AddScoped<ResultsHistoryContext>(serviceProvider =>
-        //    {
-        //        var lisContextFactory = serviceProvider.GetService<Invitro.Ethereum.Audit.Abstractions.Context.IDbContextFactory<ResultsHistoryContext>>();
-        //        return lisContextFactory.GetTypedContext<ResultsHistoryContext>(options =>
-        //            options.UseLazyLoadingProxies()
-        //                .UseNpgsql(configuration.GetConnectionString("ResultsHistory"),
-        //                    x => x.CommandTimeout(3600).EnableRetryOnFailure()));
-        //    });
-
-        //    services.AddDbContext<ResultsHistoryAuditContext>(option =>
-        //        option.UseNpgsql(configuration.GetConnectionString("ResultsHistory"),
-        //            sqlOpt => sqlOpt.CommandTimeout(3600)), ServiceLifetime.Transient);
-
-        //    return services;
-        //}
+            return services;
+        }
 
         /// <summary>
         /// Метод по добавлению фабрик
         /// </summary>
         /// <param name="services"></param>
-        //public static IServiceCollection AddDatabaseConnectionsFactory(this IServiceCollection services, IConfiguration configuration)
-        //{
-        //    // Добавление фабрики ЛИС
-        //    services.AddSingleton<ILisContextFactory>(sp =>
-        //    {
-        //        DbContextOptionsBuilder<LisContext> optionsBuilder = new DbContextOptionsBuilder<LisContext>();
+        public static IServiceCollection AddInMemoryDatabaseConnectionsFactory(this IServiceCollection services, IConfiguration configuration)
+        {
+            // Добавление фабрики транзакций
+            services.AddSingleton<TransactionContextFactory>(sp =>
+            {
+                DbContextOptionsBuilder<TransactionContext> optionsBuilder = new DbContextOptionsBuilder<TransactionContext>();
 
-        //        LisContextFactory factory = (LisContextFactory)new LisContextFactory(optionsBuilder.Options);
+                TransactionContextFactory factory = (TransactionContextFactory)new TransactionContextFactory(optionsBuilder.Options);
 
-        //        return factory;
-        //    });
+                return factory;
+            });
 
-        //    services.AddSingleton<Invitro.Ethereum.Audit.Abstractions.Context.IDbContextFactory<ResultsContext>>(sp =>
-        //    {
-        //        var optionsBuilder = new DbContextOptionsBuilder<ResultsContext>()
-        //            .UseLazyLoadingProxies()
-        //            .UseNpgsql(configuration.GetConnectionString("TaskControl"));
+            services.AddSingleton<IDbContextFactory<TransactionContext>>(sp =>
+            {
+                var optionsBuilder = new DbContextOptionsBuilder<TransactionContext>()
+                    .UseLazyLoadingProxies()
+                    .UseInMemoryDatabase("TransactionsHistory");
 
-        //        ResultsContextFactory factory = new ResultsContextFactory(optionsBuilder.Options);
+                TransactionContextFactory factory = new TransactionContextFactory(optionsBuilder.Options);
 
-        //        return factory;
-        //    });
+                return factory;
+            });
 
-        //    services.AddSingleton<Invitro.Ethereum.Audit.Abstractions.Context.IDbContextFactory<RegistrationContext>>(sp =>
-        //    {
-        //        IHttpContextAccessor accessor = sp.GetService<IHttpContextAccessor>();
+            // Добавление фабрики клиентов
+            services.AddSingleton<ClientContextFactory>(sp =>
+            {
+                DbContextOptionsBuilder<ClientContext> optionsBuilder = new DbContextOptionsBuilder<ClientContext>();
 
-        //        var optionsBuilder = new DbContextOptionsBuilder<RegistrationContext>()
-        //                .UseNpgsql(configuration.GetConnectionString("Registration"));
+                ClientContextFactory factory = (ClientContextFactory)new ClientContextFactory(optionsBuilder.Options);
 
-        //        RegistrationContextFactory factory = (RegistrationContextFactory)new RegistrationContextFactory(optionsBuilder.Options,
-        //                isAutoDetectChangesEnabled: true);
+                return factory;
+            });
 
-        //        return factory;
-        //    });
+            services.AddSingleton<IDbContextFactory<ClientContext>>(sp =>
+            {
+                var optionsBuilder = new DbContextOptionsBuilder<ClientContext>()
+                    .UseLazyLoadingProxies()
+                    .UseInMemoryDatabase("Clients");
 
-        //    services.AddSingleton<Invitro.Ethereum.Audit.Abstractions.Context.IDbContextFactory<ResultsHistoryContext>>(sp =>
-        //    {
-        //        var optionsBuilder = new DbContextOptionsBuilder<ResultsHistoryContext>()
-        //                .UseLazyLoadingProxies()
-        //                .UseNpgsql(configuration.GetConnectionString("ResultsHistory"),
-        //                    x => x.CommandTimeout(3600).EnableRetryOnFailure());
+                ClientContextFactory factory = new ClientContextFactory(optionsBuilder.Options);
 
-        //        ResultsHistoryContextFactory factory = new ResultsHistoryContextFactory(optionsBuilder.Options,
-        //                isAutoDetectChangesEnabled: true);
+                return factory;
+            });
 
-        //        return factory;
-        //    });
+            return services;
+        }
 
-        //    services.AddSingleton<Audit.Abstractions.Context.IDbContextFactory<ResultsHistoryContext>>(sp =>
-        //    {
-        //        IHttpContextAccessor accessor = sp.GetService<IHttpContextAccessor>();
+        /// <summary>
+        /// Метод по добавлению контекстов
+        /// </summary>
+        /// <param name="services"></param>
+        public static IServiceCollection AddRealDatabaseConnections(this IServiceCollection services, IConfiguration configuration)
+        {
+            // Добавление контекста транзакций
+            services.AddScoped<TransactionContext>(serviceProvider =>
+            {
+                var lisContextFactory = serviceProvider.GetService<TransactionContextFactory>();
+                return lisContextFactory.CreateDbContext<TransactionContext>(options =>
+                    options.UseLazyLoadingProxies()
+                        .UseNpgsql(configuration.GetConnectionString("TransactionsHistory"),
+                            x => x.CommandTimeout(3600).EnableRetryOnFailure()));
+            });
 
-        //        var optionsBuilder = new DbContextOptionsBuilder<ResultsHistoryContext>()
-        //                .UseLazyLoadingProxies()
-        //                .UseNpgsql(configuration.GetConnectionString("ResultsHistory"),
-        //                    x => x.CommandTimeout(3600).EnableRetryOnFailure());
+            // Добавление контекста клиентов
+            services.AddScoped<ClientContext>(serviceProvider =>
+            {
+                var lisContextFactory = serviceProvider.GetService<ClientContextFactory>();
+                return lisContextFactory.CreateDbContext<ClientContext>(options =>
+                    options.UseLazyLoadingProxies()
+                        .UseNpgsql(configuration.GetConnectionString("Clients"),
+                            x => x.CommandTimeout(3600).EnableRetryOnFailure()));
+            });
 
-        //        ResultsHistoryContextFactory factory = (ResultsHistoryContextFactory)new ResultsHistoryContextFactory(
-        //                optionsBuilder.Options, isAutoDetectChangesEnabled: true)
-        //            .WithAuditQueuePublish(() => accessor.HttpContext?.User?.UserDetails(),
-        //                sp.GetService<IServiceScopeFactory>(),
-        //                "ResultsControl",
-        //                sp.GetService<ILogger<ResultsHistoryAuditContext>>(),
-        //                saveToDatabase: false);
+            return services;
+        }
 
-        //        return factory;
-        //    });
+        /// <summary>
+        /// Метод по добавлению фабрик
+        /// </summary>
+        /// <param name="services"></param>
+        public static IServiceCollection AddRealDatabaseConnectionsFactory(this IServiceCollection services, IConfiguration configuration)
+        {
+            // Добавление фабрики транзакций
+            services.AddSingleton<TransactionContextFactory>(sp =>
+            {
+                DbContextOptionsBuilder<TransactionContext> optionsBuilder = new DbContextOptionsBuilder<TransactionContext>();
 
+                TransactionContextFactory factory = (TransactionContextFactory)new TransactionContextFactory(optionsBuilder.Options);
 
-        //    return services;
-        //}
+                return factory;
+            });
+
+            services.AddSingleton<IDbContextFactory<TransactionContext>>(sp =>
+            {
+                var optionsBuilder = new DbContextOptionsBuilder<TransactionContext>()
+                    .UseLazyLoadingProxies()
+                    .UseNpgsql(configuration.GetConnectionString("TransactionsHistory"));
+
+                TransactionContextFactory factory = new TransactionContextFactory(optionsBuilder.Options);
+
+                return factory;
+            });
+
+            // Добавление фабрики клиентов
+            services.AddSingleton<ClientContextFactory>(sp =>
+            {
+                DbContextOptionsBuilder<ClientContext> optionsBuilder = new DbContextOptionsBuilder<ClientContext>();
+
+                ClientContextFactory factory = (ClientContextFactory)new ClientContextFactory(optionsBuilder.Options);
+
+                return factory;
+            });
+
+            services.AddSingleton<IDbContextFactory<ClientContext>>(sp =>
+            {
+                var optionsBuilder = new DbContextOptionsBuilder<ClientContext>()
+                    .UseLazyLoadingProxies()
+                    .UseNpgsql(configuration.GetConnectionString("Clients"));
+
+                ClientContextFactory factory = new ClientContextFactory(optionsBuilder.Options);
+
+                return factory;
+            });
+
+            return services;
+        }
     }
 }

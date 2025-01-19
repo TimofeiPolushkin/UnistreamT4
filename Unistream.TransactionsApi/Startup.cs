@@ -1,25 +1,19 @@
-using Unistream.Transactions.Model;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System;
-using System.IO;
 using System.Reflection;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Logging;
 using MediatR;
-using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using Unistream.TransactionsApi.WebExtensions;
 using Unistream.TransactionsApi.ErrorHandling;
+using Unistream.Transactions.Model.Interfaces;
+using Unistream.Transactions.Model.EF;
+using Unistream.TransactionsApi.Services;
+using Serilog;
+using Unistream.TransactionsApi.Middleware;
 
 namespace Unistream.TransactionsApi
 {
@@ -58,7 +52,8 @@ namespace Unistream.TransactionsApi
 
                         return new BadRequestObjectResult(new TransactionsApiError
                         {
-                            Message = errors
+                            Message = errors,
+                            ErrorCode = ErrorCode.WrongRequest
                         });
                     };
                 })
@@ -66,22 +61,16 @@ namespace Unistream.TransactionsApi
 
             services.AddMediatR(Assembly.GetExecutingAssembly());
 
-            //services.AddScoped<IRabbitService, RabbitService>();
+            services.AddRealDatabaseConnectionsFactory(Configuration);
+            services.AddRealDatabaseConnections(Configuration);
 
-            //services.AddScoped<IFieldService, FieldService>();
-
-            //services.AddScoped<IMoveEventService, MoveEventService>();
-
-            //services.AddScoped<IPastureEventService, PastureEventService>();
-
-            //services.AddScoped<IPictureService, PictureService>();
-
-            //services.AddScoped<ICalculateEnergyService, CalculateEnergyService>();
+            services.AddScoped<ITransactionRepository, TransactionRepository>();
+            services.AddScoped<ITransactionProcessingService, TransactionProcessingService>();
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory, IApiVersionDescriptionProvider versionProvider, System.IServiceProvider sp)
         {
-            //loggerFactory.AddSerilog();
+            loggerFactory.AddSerilog();
 
             app.UsePathBase("/transactions")
                .UseRouting()
@@ -90,7 +79,8 @@ namespace Unistream.TransactionsApi
                     .AllowAnyHeader()
                     .WithExposedHeaders("Content-Disposition"));
 
-            app.UseRequestLocalization()
+            app.UseMiddleware<ErrorHandlingMiddleware>()
+                .UseRequestLocalization()
                 .UseEndpoints(builder =>
                 {
                     builder.MapControllers();
@@ -109,38 +99,6 @@ namespace Unistream.TransactionsApi
 
                     options.DisplayOperationId();
                 });
-
-            app.UseSpa(
-                spa =>
-                {
-                    spa.Options.SourcePath = "ClientApp";
-                }
-            );
         }
-
-        //public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        //{
-        //    if (env.IsDevelopment())
-        //    {
-        //        app.UseDeveloperExceptionPage();
-
-        //        app.UseSwagger();
-
-        //        app.UseSwaggerUI(c =>
-        //        {
-        //            c.SwaggerEndpoint("/swagger/v1/swagger.json", "Energy Calculation");
-        //        });
-        //    }
-        //    //app.UseMiddleware<ErrorHandlingMiddleware>();
-
-        //    app.UseRouting();
-
-        //    app.UseStaticFiles();
-
-        //    app.UseEndpoints(endpoints =>
-        //    {
-        //        endpoints.MapControllers();
-        //    });
-        //}
     }
 }

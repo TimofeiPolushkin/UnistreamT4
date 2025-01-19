@@ -1,15 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
-using Unistream.Transactions.Model.EF.Entities;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Unistream.Clients.Model.EF.Entities;
 
-namespace Unistream.Transactions.Model.EF.EntityTypeConfiguration
+namespace Unistream.Clients.Model.EF.EntityTypeConfiguration
 {
-    internal class TransactionHistoryConfiguration : IEntityTypeConfiguration<TransactionHistory>
+    internal class ClientConfiguration : IEntityTypeConfiguration<Client>
     {
-        public void Configure(EntityTypeBuilder<TransactionHistory> builder)
+        public void Configure(EntityTypeBuilder<Client> builder)
         {
-            builder.ToTable("Transactions", "info");
+            builder.ToTable("Clients", "info");
 
             builder.Property(x => x.Id).HasColumnName(@"Id").IsRequired().HasColumnType("bigint").UseIdentityColumn();
             builder.Property(x => x.UniId).HasColumnName(@"UniId").HasColumnType("uuid").IsRequired();
@@ -26,10 +26,10 @@ namespace Unistream.Transactions.Model.EF.EntityTypeConfiguration
                     .IsConcurrencyToken()
                     .ValueGeneratedOnAddOrUpdate();
 
-            builder.Property(x => x.TransactionType).HasColumnName(@"TransactionType").HasColumnType("smallint").IsRequired();
-            builder.Property(x => x.Amount).HasColumnName(@"Amount").HasColumnType("decimal").IsRequired();
-            builder.Property(x => x.ClientId).HasColumnName(@"ClientId").HasColumnType("uuid").IsRequired();
-            builder.Property(x => x.TransactionDateTime).HasColumnName(@"TransactionDateTime").HasColumnType("timestamp(6) with time zone").IsRequired();
+            builder.Property(x => x.FirstName).HasColumnName(@"FirstName").HasColumnType("varchar(255)").IsRequired();
+            builder.Property(x => x.MiddleName).HasColumnName(@"MiddleName").HasColumnType("varchar(255)").IsRequired();
+            builder.Property(x => x.LastName).HasColumnName(@"LastName").HasColumnType("varchar(255)").IsRequired();
+            builder.Property(x => x.Balance).HasColumnName(@"Balance").HasColumnType("decimal").IsRequired();
         }
     }
 }

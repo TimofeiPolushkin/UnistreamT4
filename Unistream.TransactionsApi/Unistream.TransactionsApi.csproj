@@ -29,6 +29,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Unistream.Transactions.Model\Unistream.Transactions.Model.csproj" />
+        <ProjectReference Include="..\Unistream.Clients.Model\Unistream.Clients.Model.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -7,20 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.12" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.12" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="8.0.12" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.12" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
-    </ItemGroup>
-
-    <ItemGroup>
+        <ProjectReference Include="..\Unistream.Clients.Model\Unistream.Clients.Model.csproj" />
         <ProjectReference Include="..\Unistream.Core\Unistream.Core.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Enums\" />
-        <Folder Include="Models\" />
     </ItemGroup>
 
 </Project>
