@@ -2,11 +2,12 @@
 using System.Threading;
 using System;
 using Serilog;
-using Unistream.Clients.Model.Models;
 using Unistream.Clients.Model.Interfaces;
 using System.Collections.Generic;
 using Unistream.TransactionsApi.ErrorHandling;
 using System.Linq;
+using Unistream.TransactionsApi.V1.Helpers;
+using Unistream.TransactionsApi.V1.Contracts;
 
 namespace Unistream.TransactionsApi.V1.Commands
 {
@@ -74,15 +75,16 @@ namespace Unistream.TransactionsApi.V1.Commands
                         throw ErrorFactory.Create(ErrorCode.WrongRequest, errorMessage);
                     }
 
-                    return await _clientRepository.CreateOrUpdateClientAsync(new ClientModel
+                    var client = await _clientRepository.CreateOrUpdateClientAsync(new Unistream.Clients.Model.Models.ClientModel
                     {
                         FirstName = request.FirstName,
                         MiddleName = request.MiddleName,
                         LastName = request.LastName,
-                        UniId = Guid.NewGuid(),
                         Balance = request.Balance
                     },
                     cancellationToken);
+
+                    return ContractsMapper.Map(client);
                 }
                 catch (Exception ex)
                 {

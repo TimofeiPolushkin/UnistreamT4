@@ -79,12 +79,13 @@ namespace Unistream.Transactions.Model.EF
                     TransactionDateTime = transaction.DateTime,
                 });
 
+                //TODO Атомарно с изменением баланса клиента
                 await transactionContext.SaveChangesAsync(cancellationToken);
 
                 return new ClientActualBalanceModel
                 {
                     OperationDate = transaction.DateTime,
-                    Balance = client.Balance
+                    Balance = totalBalance
                 };
             }
         }
@@ -114,7 +115,7 @@ namespace Unistream.Transactions.Model.EF
                     };
                 }
 
-                decimal totalBalance = CalclulateClientBalance(clientBalance, existsTransaction.Amount, existsTransaction.TransactionType, true);
+                decimal totalBalance = CalclulateClientBalance(clientBalance, existsTransaction.Amount, SwitchTransactionType(existsTransaction.TransactionType));
 
                 clientBalance = await _clientRepository.ChangeClientBalanceAsync(existsTransaction.ClientId, totalBalance, cancellationToken);
 
@@ -122,6 +123,7 @@ namespace Unistream.Transactions.Model.EF
                 existsTransaction.RollbackDateTime = utcNow;
                 existsTransaction.IsRollback = true;
 
+                //TODO Атомарно с изменением баланса клиента
                 await transactionContext.SaveChangesAsync(cancellationToken);
 
                 return new ClientActualBalanceModel
@@ -132,35 +134,55 @@ namespace Unistream.Transactions.Model.EF
             }
         }
 
-        private decimal CalclulateClientBalance(decimal balance, decimal amount, TransactionHistoryType transactionType, bool IsSwapOperation = false)
+        //TODO Добавить фильтры, сортировку
+        ///<inheritdoc/>
+        public async Task<List<TransactionHistoryModel>> SearchClientsAsync(int skip, int take, CancellationToken cancellationToken)
+        {
+            using (TransactionContext transactionContext = _transactionContextFactory.CreateDbContext())
+            {
+                return await transactionContext.TransactionsHistory
+                    .AsNoTracking()
+                    .Where(c => c.Deleted == null)
+                    .OrderBy(c => c.Id)
+                    .Skip(skip)
+                    .Take(take)
+                    .Select(Mapper.TransactionHistoryProjection)
+                    .ToListAsync(cancellationToken);
+            }
+        }
+
+        private decimal CalclulateClientBalance(decimal balance, decimal amount, TransactionHistoryType transactionType)
         {
             switch(transactionType)
             {
                 case TransactionHistoryType.Credit:
-                    if (IsSwapOperation)
-                    {
-                        goto case TransactionHistoryType.Debit;
-                    }
-
                     return balance + amount;
 
                 case TransactionHistoryType.Debit:
-                    if (IsSwapOperation)
-                    {
-                        goto case TransactionHistoryType.Credit;
-                    }
-
-                    decimal newBalance = balance + amount;
+                    decimal newBalance = balance - amount;
 
                     if (newBalance < 0)
                     {
-                        throw new Exception("Баланс не может быть отрицательным");
+                        throw new Exception("Баланс клиента не может быть меньше нуля");
                     }
 
                     return newBalance;
 
                 default:
                     throw new Exception("Неизвестный тип операции транзакции");
+            }
+        }
+
+        private TransactionHistoryType SwitchTransactionType(TransactionHistoryType transactionType)
+        {
+            switch (transactionType)
+            {
+                case TransactionHistoryType.Credit:
+                    return TransactionHistoryType.Debit;
+                case TransactionHistoryType.Debit:
+                    return TransactionHistoryType.Credit;
+                default:
+                    throw new Exception("Неподдерживаемая операция");
             }
         }
     }

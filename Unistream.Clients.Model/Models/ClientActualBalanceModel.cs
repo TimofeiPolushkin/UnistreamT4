@@ -1,4 +1,4 @@
-﻿namespace Unistream.Transactions.Model.Models
+﻿namespace Unistream.Clients.Model.Models
 {
     /// <summary>
     /// Актуальный баланс клиента

@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Unistream.Clients.Model.Interfaces;
+using Unistream.Clients.Model.Models;
 using Unistream.Transactions.Model.Interfaces;
-using Unistream.Transactions.Model.Models;
 using Unistream.Transactions.Model.Models.Enums;
 using Unistream.TransactionsApi.ErrorHandling;
 using Unistream.TransactionsApi.V1.Helpers;

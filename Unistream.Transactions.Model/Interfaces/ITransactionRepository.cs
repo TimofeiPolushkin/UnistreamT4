@@ -22,5 +22,10 @@ namespace Unistream.Transactions.Model.Interfaces
         /// </summary>
         public Task<ClientActualBalanceModel> RevertTransactionAsync(Guid transactionId,
             CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Получение списка истории транзакций
+        /// </summary>
+        public Task<List<TransactionHistoryModel>> SearchClientsAsync(int skip, int take, CancellationToken cancellationToken);
     }
 }

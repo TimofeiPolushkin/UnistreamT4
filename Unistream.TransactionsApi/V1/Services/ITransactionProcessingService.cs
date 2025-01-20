@@ -2,8 +2,8 @@
 using System.Threading;
 using Unistream.Transactions.Model.Models.Enums;
 using Unistream.Transactions.Model.Interfaces;
-using Unistream.Transactions.Model.Models;
 using System;
+using Unistream.Clients.Model.Models;
 
 namespace Unistream.TransactionsApi.V1.Services
 {

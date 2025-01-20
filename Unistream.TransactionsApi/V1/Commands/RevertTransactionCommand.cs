@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Unistream.TransactionsApi.ErrorHandling;
 using Unistream.TransactionsApi.V1.Contracts;
+using Unistream.TransactionsApi.V1.Helpers;
 using Unistream.TransactionsApi.V1.Services;
 
 namespace Unistream.TransactionsApi.V1.Commands
@@ -42,7 +43,8 @@ namespace Unistream.TransactionsApi.V1.Commands
             {
                 try
                 {
-                    await _transactionProcessingService.RevertTransactionAsync(request.TransactionId, cancellationToken);
+                    var revertResult = await _transactionProcessingService.RevertTransactionAsync(request.TransactionId, cancellationToken);
+                    return ContractsMapper.MapRevertTransaction(revertResult);
                 }
                 catch (Exception ex)
                 {

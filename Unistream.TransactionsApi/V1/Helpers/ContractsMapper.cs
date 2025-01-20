@@ -1,4 +1,4 @@
-﻿using Unistream.Transactions.Model.Models;
+﻿using Unistream.Clients.Model.Models;
 using Unistream.TransactionsApi.V1.Contracts;
 
 namespace Unistream.TransactionsApi.V1.Helpers
@@ -47,6 +47,41 @@ namespace Unistream.TransactionsApi.V1.Helpers
             {
                 RevertDateTime = model.OperationDate,
                 ClientBalance = model.Balance,
+            };
+        }
+
+        public static TransactionsApi.V1.Contracts.ClientModel Map(Unistream.Clients.Model.Models.ClientModel model)
+        {
+            if (model == null)
+            {
+                return null;
+            }
+
+            return new TransactionsApi.V1.Contracts.ClientModel
+            {
+                UniId = model.UniId,
+                FirstName = model.FirstName,
+                MiddleName = model.MiddleName,
+                LastName = model.LastName,
+                Balance = model.Balance
+            };
+        }
+
+        public static TransactionsApi.V1.Contracts.TransactionHistoryModel Map(Unistream.Transactions.Model.Models.TransactionHistoryModel model)
+        {
+            if (model == null)
+            {
+                return null;
+            }
+
+            return new TransactionsApi.V1.Contracts.TransactionHistoryModel
+            {
+                UniId = model.UniId,
+                Amount = model.Amount,
+                ClientId = model.ClientId,
+                TransactionDateTime = model.TransactionDateTime,
+                IsRollback = model.IsRollback,
+                RollbackDateTime = model.RollbackDateTime
             };
         }
     }

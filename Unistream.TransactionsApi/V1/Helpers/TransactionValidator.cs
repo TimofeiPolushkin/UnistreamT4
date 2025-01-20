@@ -31,7 +31,7 @@ namespace Unistream.TransactionsApi.V1.Helpers
 
             if (transactionOperationType == TransactionOperationType.Debit && (client.Balance - transaction.Amount) < 0)
             {
-                resultValidation.Errors.Add("Баланс клиента не может быть меньше нуля");
+                resultValidation.Errors.Add($"Баланс клиента не может быть меньше нуля. Текущий баланс клиента {client.Balance}");
             }
 
             if (transaction.DateTime.ToUniversalTime() > DateTimeOffset.UtcNow)

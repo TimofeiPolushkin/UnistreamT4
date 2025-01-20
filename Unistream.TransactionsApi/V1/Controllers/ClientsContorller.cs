@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using Unistream.TransactionsApi.ErrorHandling;
 using Unistream.TransactionsApi.V1.Contracts;
 using Unistream.TransactionsApi.V1.Queries;
+using Unistream.TransactionsApi.V1.Commands;
+using System.Collections.Generic;
 
 namespace Unistream.TransactionsApi.V1.Controllers
 {
@@ -35,19 +37,43 @@ namespace Unistream.TransactionsApi.V1.Controllers
         }
 
         /// <summary>
+        /// Создание клиента
+        /// </summary>
+        /// <param name="cancellationToken">Токен отмены</param>
+        [HttpPost("create")]
+        [ProducesResponseType(typeof(ClientModel), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(TransactionsApiError), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> CreateAsync([FromBody] CreateClientCommand request, CancellationToken cancellationToken)
+        {
+            return Ok(await _dispatcher.Send(request, cancellationToken));
+        }
+
+        /// <summary>
         /// Баланс клиента
         /// </summary>
         /// <param name="cancellationToken">Токен отмены</param>
         [HttpGet("balance/{id}")]
         [ProducesResponseType(typeof(ClientBalanceModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(TransactionsApiError), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> BalanceAsync([Required][FromQuery] Guid id, CancellationToken cancellationToken)
+        public async Task<IActionResult> BalanceAsync([Required] Guid id, CancellationToken cancellationToken)
         {
             return Ok(await _dispatcher.Send(new ClientBalanceQuery
             {
                 ClientId = id,
             },
             cancellationToken));
+        }
+
+        /// <summary>
+        /// Поиск клиентов
+        /// </summary>
+        /// <param name="cancellationToken">Токен отмены</param>
+        [HttpPost("search")]
+        [ProducesResponseType(typeof(List<ClientModel>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(TransactionsApiError), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> SearchAsync([FromBody] SearchClientsQuery request, CancellationToken cancellationToken)
+        {
+            return Ok(await _dispatcher.Send(request, cancellationToken));
         }
     }
 }

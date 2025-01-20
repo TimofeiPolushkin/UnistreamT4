@@ -1,27 +1,35 @@
 ﻿using Serilog;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Unistream.Clients.Model.Interfaces;
 using Unistream.TransactionsApi.ErrorHandling;
 using Unistream.TransactionsApi.V1.Contracts;
+using Unistream.TransactionsApi.V1.Helpers;
 
 namespace Unistream.TransactionsApi.V1.Queries
 {
     /// <summary>
-    /// Запрос баланса клиента
+    /// Получение списка клиентов
     /// </summary>
-    public class ClientBalanceQuery : MediatR.IRequest<ClientBalanceModel>
+    public class SearchClientsQuery : MediatR.IRequest<List<ClientModel>>
     {
         /// <summary>
-        /// Идентификатор клиента
+        /// Параметр пропуска
         /// </summary>
-        public Guid ClientId { get; set; }
+        public int Skip { get; set; }
+
+        /// <summary>
+        /// Параметр выборки
+        /// </summary>
+        public int Take { get; set; } = 1000;
 
         /// <summary>
         /// Запрос
         /// </summary>
-        public class ClientBalanceQueryHandler : MediatR.IRequestHandler<ClientBalanceQuery, ClientBalanceModel>
+        public class SearchClientsQueryHandler : MediatR.IRequestHandler<SearchClientsQuery, List<ClientModel>>
         {
             /// <summary>
             /// Репозиторий клиентов
@@ -31,27 +39,26 @@ namespace Unistream.TransactionsApi.V1.Queries
             /// <summary>
             /// Конструктор
             /// </summary>
-            public ClientBalanceQueryHandler(
+            public SearchClientsQueryHandler(
                 IClientRepository clientRepository)
             {
                 _clientRepository = clientRepository;
             }
 
             ///<inheritdoc/>
-            public async Task<ClientBalanceModel> Handle(ClientBalanceQuery request, CancellationToken cancellationToken)
+            public async Task<List<ClientModel>> Handle(SearchClientsQuery request, CancellationToken cancellationToken)
             {
                 try
                 {
-                    decimal clientBalance = await _clientRepository.GetClientBalanceByIdAsync(request.ClientId, cancellationToken);
-                    return new ClientBalanceModel
-                    {
-                        BalanceDateTime = DateTime.UtcNow,
-                        ClientBalance = clientBalance
-                    };
+                    var clients = await _clientRepository.SearchClientsAsync(request.Skip, request.Take, cancellationToken);
+
+                    return clients
+                        .Select(ContractsMapper.Map)
+                        .ToList();
                 }
                 catch (Exception ex)
                 {
-                    Log.Logger.Error(ex, string.Format("Ошибка запроса баланса клиента Id {0}", request.ClientId));
+                    Log.Logger.Error(ex, string.Format("Ошибка запроса списка клиентов}"));
                     throw ErrorFactory.Create(ErrorCode.UnspecifiedError, ex.Message);
                 }
             }

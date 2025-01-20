@@ -71,6 +71,7 @@ namespace Unistream.Clients.Model.EF
                 else
                 {
                     var newClient = Mapper.Map(clientModel, utcNow);
+                    newClient.UniId = Guid.NewGuid();
 
                     if (newClient == null)
                     {
