@@ -30,6 +30,8 @@ namespace Unistream.Transactions.Model.EF.EntityTypeConfiguration
             builder.Property(x => x.Amount).HasColumnName(@"Amount").HasColumnType("decimal").IsRequired();
             builder.Property(x => x.ClientId).HasColumnName(@"ClientId").HasColumnType("uuid").IsRequired();
             builder.Property(x => x.TransactionDateTime).HasColumnName(@"TransactionDateTime").HasColumnType("timestamp(6) with time zone").IsRequired();
+            builder.Property(x => x.IsRollback).HasColumnName(@"IsRollback").HasColumnType("boolean");
+            builder.Property(x => x.RollbackDateTime).HasColumnName(@"RollbackDateTime").HasColumnType("timestamp(6) with time zone");
         }
     }
 }

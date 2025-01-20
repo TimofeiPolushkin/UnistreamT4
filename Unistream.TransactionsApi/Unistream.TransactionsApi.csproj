@@ -32,8 +32,4 @@
         <ProjectReference Include="..\Unistream.Clients.Model\Unistream.Clients.Model.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="V1\Queries\" />
-    </ItemGroup>
-
 </Project>

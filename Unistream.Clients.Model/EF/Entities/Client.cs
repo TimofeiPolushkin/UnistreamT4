@@ -3,7 +3,7 @@
     /// <summary>
     /// Клиент
     /// </summary>
-    public class Client
+    public class Client : IClientEntity
     {
         ///<inheritdoc/>
         public long Id { get; set; }

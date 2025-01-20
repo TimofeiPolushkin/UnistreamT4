@@ -13,6 +13,8 @@ DO $$ BEGIN
 		"Amount" decimal NOT NULL,
 		"ClientId" uuid NOT NULL,
 		"TransactionDateTime" timestamp(6) with time zone NOT NULL,
+		"IsRollback" boolean,
+		"RollbackDateTime" timestamp(6) with time zone,
 		CONSTRAINT "PK_Transactions" PRIMARY KEY ("Id")
 	);
 

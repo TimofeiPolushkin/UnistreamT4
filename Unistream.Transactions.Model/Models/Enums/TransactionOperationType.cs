@@ -13,11 +13,6 @@
         /// <summary>
         /// Снятие
         /// </summary>
-        Debit = 2,
-
-        /// <summary>
-        /// Откат
-        /// </summary>
-        Rollback = 3
+        Debit = 2
     }
 }

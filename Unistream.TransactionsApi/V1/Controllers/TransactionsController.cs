@@ -35,9 +35,7 @@ namespace Unistream.TransactionsApi.V1.Controllers
         /// <summary>
         /// Зачисление средств клиенту
         /// </summary>
-        /// <param name="request">Запрос поиска</param>
         /// <param name="cancellationToken">Токен отмены</param>
-        /// <returns></returns>
         [HttpPost("credit")]
         [ProducesResponseType(typeof(InsertTransactionOperationResultModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(TransactionsApiError), (int)HttpStatusCode.BadRequest)]
@@ -49,9 +47,7 @@ namespace Unistream.TransactionsApi.V1.Controllers
         /// <summary>
         /// Списание средств клиента
         /// </summary>
-        /// <param name="request">Запрос поиска</param>
         /// <param name="cancellationToken">Токен отмены</param>
-        /// <returns></returns>
         [HttpPost("debit")]
         [ProducesResponseType(typeof(InsertTransactionOperationResultModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(TransactionsApiError), (int)HttpStatusCode.BadRequest)]
@@ -60,6 +56,10 @@ namespace Unistream.TransactionsApi.V1.Controllers
             return Ok(await _dispatcher.Send(request, cancellationToken));
         }
 
+        /// <summary>
+        /// Откат транзакции
+        /// </summary>
+        /// <param name="cancellationToken">Токен отмены</param>
         [HttpPost("revert/{id}")]
         [ProducesResponseType(typeof(RevertTransactionOperationResultModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(TransactionsApiError), (int)HttpStatusCode.BadRequest)]
@@ -70,14 +70,6 @@ namespace Unistream.TransactionsApi.V1.Controllers
                 TransactionId = id,
             },
             cancellationToken));
-        }
-
-        [HttpGet("balance/{id}")]
-        [ProducesResponseType(typeof(ClientBalanceModel), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(TransactionsApiError), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> BalanceAsync([Required][FromQuery] Guid id, CancellationToken cancellationToken)
-        {
-            return Ok(10);
         }
     }
 }

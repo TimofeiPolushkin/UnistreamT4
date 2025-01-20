@@ -1,4 +1,7 @@
-﻿using Unistream.Transactions.Model.Models;
+﻿using Unistream.Clients.Model.Interfaces;
+using Unistream.Clients.Model.Models;
+using Unistream.Transactions.Model.Models;
+using Unistream.Transactions.Model.Models.Enums;
 
 namespace Unistream.Transactions.Model.Interfaces
 {
@@ -8,15 +11,16 @@ namespace Unistream.Transactions.Model.Interfaces
     public interface ITransactionRepository
     {
         /// <summary>
-        /// Обработка транзакции зачисления
+        /// Обработка транзакции
         /// </summary>
-        public Task<ClientActualBalanceModel> CreditTransactionAsync(ITransaction transaction,
-                    CancellationToken cancellationToken);
+        public Task<ClientActualBalanceModel> ProcessTransactionAsync(ITransaction transaction,
+            TransactionOperationType transactionOperationType,
+            CancellationToken cancellationToken);
 
         /// <summary>
-        /// Обработка транзакции списания
+        /// Откат транзакции
         /// </summary>
-        public Task<ClientActualBalanceModel> DebitTransactionAsync(ITransaction transaction,
-                    CancellationToken cancellationToken);
+        public Task<ClientActualBalanceModel> RevertTransactionAsync(Guid transactionId,
+            CancellationToken cancellationToken);
     }
 }

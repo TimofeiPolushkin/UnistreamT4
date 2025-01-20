@@ -11,9 +11,11 @@ using Unistream.TransactionsApi.WebExtensions;
 using Unistream.TransactionsApi.ErrorHandling;
 using Unistream.Transactions.Model.Interfaces;
 using Unistream.Transactions.Model.EF;
-using Unistream.TransactionsApi.Services;
 using Serilog;
 using Unistream.TransactionsApi.Middleware;
+using Unistream.TransactionsApi.V1.Services;
+using Unistream.Clients.Model.Interfaces;
+using Unistream.Clients.Model.EF;
 
 namespace Unistream.TransactionsApi
 {
@@ -65,6 +67,7 @@ namespace Unistream.TransactionsApi
             services.AddRealDatabaseConnections(Configuration);
 
             services.AddScoped<ITransactionRepository, TransactionRepository>();
+            services.AddScoped<IClientRepository, ClientRepository>();
             services.AddScoped<ITransactionProcessingService, TransactionProcessingService>();
         }
 

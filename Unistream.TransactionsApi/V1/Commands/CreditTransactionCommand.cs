@@ -3,11 +3,11 @@ using System.Threading;
 using System;
 using Unistream.Transactions.Model.Interfaces;
 using Serilog;
-using Unistream.TransactionsApi.Services;
 using Unistream.Transactions.Model.Models.Enums;
 using Unistream.TransactionsApi.V1.Contracts;
 using Unistream.TransactionsApi.V1.Helpers;
 using Unistream.TransactionsApi.ErrorHandling;
+using Unistream.TransactionsApi.V1.Services;
 
 namespace Unistream.TransactionsApi.V1.Commands
 {
@@ -57,7 +57,7 @@ namespace Unistream.TransactionsApi.V1.Commands
                 }
                 catch (Exception ex)
                 {
-                    Log.Logger.Error(ex, "Ошибка при начислении средств на счёт клиенту с Id {0}", request.ClientId);
+                    Log.Logger.Error(ex, string.Format("Ошибка при начислении средств на счёт клиенту с Id {0}", request.ClientId));
                     throw ErrorFactory.Create(ErrorCode.UnspecifiedError, ex.Message);
                 }
             }

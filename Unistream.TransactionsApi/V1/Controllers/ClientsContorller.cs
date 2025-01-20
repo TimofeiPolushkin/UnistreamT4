@@ -1,8 +1,13 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
+using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Unistream.TransactionsApi.V1.Commands;
+using Unistream.TransactionsApi.ErrorHandling;
+using Unistream.TransactionsApi.V1.Contracts;
+using Unistream.TransactionsApi.V1.Queries;
 
 namespace Unistream.TransactionsApi.V1.Controllers
 {
@@ -30,15 +35,19 @@ namespace Unistream.TransactionsApi.V1.Controllers
         }
 
         /// <summary>
-        /// Создание клиентов
+        /// Баланс клиента
         /// </summary>
-        /// <param name="request">Запрос поиска</param>
         /// <param name="cancellationToken">Токен отмены</param>
-        /// <returns></returns>
-        [HttpPost("create")]
-        public async Task<IActionResult> CreateAsync([FromBody] CreditTransactionCommand request, CancellationToken cancellationToken)
+        [HttpGet("balance/{id}")]
+        [ProducesResponseType(typeof(ClientBalanceModel), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(TransactionsApiError), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> BalanceAsync([Required][FromQuery] Guid id, CancellationToken cancellationToken)
         {
-            return Ok(await _dispatcher.Send(request, cancellationToken));
+            return Ok(await _dispatcher.Send(new ClientBalanceQuery
+            {
+                ClientId = id,
+            },
+            cancellationToken));
         }
     }
 }

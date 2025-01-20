@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Unistream.Transactions.Model.Interfaces;
+using Unistream.TransactionsApi.ErrorHandling;
 using Unistream.TransactionsApi.V1.Contracts;
+using Unistream.TransactionsApi.V1.Services;
 
 namespace Unistream.TransactionsApi.V1.Commands
 {
@@ -16,33 +18,36 @@ namespace Unistream.TransactionsApi.V1.Commands
         /// </summary>
         public Guid TransactionId { get; set; }
 
+        /// <summary>
+        /// Запрос
+        /// </summary>
         public class RevertTransactionCommandHandler : MediatR.IRequestHandler<RevertTransactionCommand, RevertTransactionOperationResultModel>
         {
             /// <summary>
-            /// Репозиторий транзакций
+            /// Сервис обрабоки транзакций
             /// </summary>
-            private readonly ITransactionRepository _transactionRepository;
+            private readonly ITransactionProcessingService _transactionProcessingService;
 
             /// <summary>
             /// Конструктор
             /// </summary>
             public RevertTransactionCommandHandler(
-                ITransactionRepository transactionRepository)
+                ITransactionProcessingService transactionProcessingService)
             {
-                _transactionRepository = transactionRepository;
+                _transactionProcessingService = transactionProcessingService;
             }
 
             ///<inheritdoc/>
-            public async Task<RevertTransactionOperationResultModel> Handle(RevertTransactionCommand request, CancellationToken token)
+            public async Task<RevertTransactionOperationResultModel> Handle(RevertTransactionCommand request, CancellationToken cancellationToken)
             {
                 try
                 {
-
+                    await _transactionProcessingService.RevertTransactionAsync(request.TransactionId, cancellationToken);
                 }
                 catch (Exception ex)
                 {
-                    //Log.Error(ex, "Ошибка при изменении объекта МБ");
-                    throw;
+                    Log.Logger.Error(ex, string.Format("Ошибка отката транзакции Id {0}", request.TransactionId));
+                    throw ErrorFactory.Create(ErrorCode.UnspecifiedError, ex.Message);
                 }
 
                 return null;

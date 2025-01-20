@@ -39,5 +39,15 @@
         /// Дата и время транзакции
         /// </summary>
         public DateTimeOffset TransactionDateTime { get; set; }
+
+        /// <summary>
+        /// Признак отката транзакции
+        /// </summary>
+        public bool? IsRollback { get; set; }
+
+        /// <summary>
+        /// Признак отката транзакции
+        /// </summary>
+        public DateTimeOffset? RollbackDateTime { get; set; }
     }
 }

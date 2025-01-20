@@ -6,19 +6,7 @@
     public class ClientModel
     {
         ///<inheritdoc/>
-        public long Id { get; set; }
-
-        ///<inheritdoc/>
         public Guid UniId { get; set; }
-
-        ///<inheritdoc/>
-        public DateTimeOffset? Created { get; set; }
-
-        ///<inheritdoc/>
-        public DateTimeOffset? Updated { get; set; }
-
-        ///<inheritdoc/>
-        public DateTimeOffset? Deleted { get; set; }
 
         /// <summary>
         /// Имя
