@@ -88,6 +88,7 @@ namespace Unistream.TransactionsApi.WebExtensions
         /// Метод по добавлению контекстов
         /// </summary>
         /// <param name="services"></param>
+        /// TODO Решить проблему ошибки при InMemory и свойства Version в сущностях
         public static IServiceCollection AddInMemoryDatabaseConnections(this IServiceCollection services, IConfiguration configuration)
         {
             // Добавление контекста транзакций
@@ -114,6 +115,7 @@ namespace Unistream.TransactionsApi.WebExtensions
         /// Метод по добавлению фабрик
         /// </summary>
         /// <param name="services"></param>
+        /// TODO Решить проблему ошибки при InMemory и свойства Version в сущностях
         public static IServiceCollection AddInMemoryDatabaseConnectionsFactory(this IServiceCollection services, IConfiguration configuration)
         {
             // Добавление фабрики транзакций
