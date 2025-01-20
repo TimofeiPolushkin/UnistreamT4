@@ -18,7 +18,7 @@
         public DateTimeOffset? Deleted { get; set; }
 
         ///<inheritdoc/>
-        public byte[] Version { get; set; } = Array.Empty<byte>();
+        public byte[] Version { get; set; }
 
         /// <summary>
         /// Тип транзакции
