@@ -51,8 +51,6 @@ namespace Unistream.TransactionsApi.V1.Commands
                     Log.Logger.Error(ex, string.Format("Ошибка отката транзакции Id {0}", request.TransactionId));
                     throw ErrorFactory.Create(ErrorCode.UnspecifiedError, ex.Message);
                 }
-
-                return null;
             }
         }
     }
